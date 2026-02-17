@@ -1,0 +1,236 @@
+{
+  "info": {
+    "name": "Home Service Platform API",
+    "description": "Complete API for home service booking platform",
+    "version": "1.0.0"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Signup",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/auth/signup",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "raw": "{\"name\":\"John Doe\",\"email\":\"john@example.com\",\"phone\":\"9999999999\",\"password\":\"Pass123\",\"confirmPassword\":\"Pass123\"}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/auth/login",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "raw": "{\"email\":\"john@example.com\",\"password\":\"Pass123\"}"
+            }
+          }
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/auth/profile",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ]
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/api/auth/profile",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "raw": "{\"name\":\"Jane Doe\",\"profileImage\":\"image_url\"}"
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/auth/logout",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "raw": "{\"refreshToken\":\"{{refreshToken}}\"}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Services",
+      "item": [
+        {
+          "name": "Get All Services",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/services?page=1&limit=10&category=cleaning"
+          }
+        },
+        {
+          "name": "Get Service by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/services/:id"
+          }
+        },
+        {
+          "name": "Search Services",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/services/search?keyword=cleaning"
+          }
+        },
+        {
+          "name": "Get Categories",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/services/categories"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cart",
+      "item": [
+        {
+          "name": "Add to Cart",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/cart",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "raw": "{\"serviceId\":\"...\",\"quantity\":1,\"selectedDate\":\"2026-02-20\",\"selectedTime\":\"10:00 AM\"}"
+            }
+          }
+        },
+        {
+          "name": "Get Cart",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/cart",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ]
+          }
+        },
+        {
+          "name": "Clear Cart",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/api/cart",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bookings",
+      "item": [
+        {
+          "name": "Create Booking",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/bookings",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "raw": "{\"serviceId\":\"...\",\"addressId\":\"...\",\"date\":\"2026-02-20\",\"time\":\"10:00 AM\",\"notes\":\"\"}"
+            }
+          }
+        },
+        {
+          "name": "Get Bookings",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/bookings?page=1&limit=10",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ]
+          }
+        },
+        {
+          "name": "Cancel Booking",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/api/bookings/:id/cancel",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "raw": "{\"cancellationReason\":\"Unable to attend\"}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Addresses",
+      "item": [
+        {
+          "name": "Create Address",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/addresses",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "raw": "{\"fullName\":\"John\",\"phone\":\"9999999999\",\"houseNo\":\"123\",\"area\":\"Downtown\",\"city\":\"NYC\",\"state\":\"NY\",\"pincode\":\"100001\"}"
+            }
+          }
+        },
+        {
+          "name": "Get Addresses",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/addresses",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000"
+    },
+    {
+      "key": "accessToken",
+      "value": ""
+    },
+    {
+      "key": "refreshToken",
+      "value": ""
+    }
+  ]
+}
