@@ -3,8 +3,11 @@ const { isValidEmail, isValidPhone, isValidPassword, isValidPincode } = require(
 
 const validateSignup = (req, res, next) => {
   const { name, email, phone, password, confirmPassword } = req.body;
-
-  if (!name || !email || !phone || !password || !confirmPassword) {
+  console.log('Validating signup data:', { name, email, phone });
+  if (password !== confirmPassword) {
+    return sendError(res, 400, 'Passwords do not match');
+  }
+  if (!name || !email || !phone || !password) {
     return sendError(res, 400, 'All fields are required');
   }
 

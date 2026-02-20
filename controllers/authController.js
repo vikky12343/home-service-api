@@ -365,10 +365,19 @@ exports.logout = async (req, res, next) => {
 // @access Public
 exports.refreshToken = async (req, res, next) => {
   try {
-    const { refreshToken } = req.body;
+    // Get refresh token from body or headers
+    let { refreshToken } = req.body;
+    
+    // If not in body, try Authorization header
+    if (!refreshToken && req.headers.authorization) {
+      const parts = req.headers.authorization.split(' ');
+      if (parts.length === 2 && parts[0] === 'Bearer') {
+        refreshToken = parts[1];
+      }
+    }
 
     if (!refreshToken) {
-      return sendError(res, 400, 'Refresh token is required');
+      return sendError(res, 400, 'Refresh token is required in body or Authorization header');
     }
 
     const decoded = verifyRefreshToken(refreshToken);

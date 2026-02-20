@@ -19,7 +19,11 @@ app.use(express.urlencoded({ extended: true }));
 
 // MongoDB Connection
 mongoose
-  .connect(process.env.DATABASE_URL)
+  .connect(process.env.DATABASE_URL, {
+    serverSelectionTimeoutMS: 30000,
+    socketTimeoutMS: 45000,
+    family: 4
+  })
   .then(() => {
     console.log('✓ MongoDB connected successfully');
   })

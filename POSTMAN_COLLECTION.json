@@ -1,36 +1,93 @@
 {
   "info": {
-    "name": "Home Service Platform API",
-    "description": "Complete API for home service booking platform",
-    "version": "1.0.0"
+    "name": "Home Service API - Production",
+    "description": "Complete Postman collection for testing Home Service API with all endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "booking_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "payment_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
   "item": [
     {
       "name": "Authentication",
       "item": [
         {
-          "name": "Signup",
+          "name": "Sign Up",
           "request": {
             "method": "POST",
-            "url": "{{base_url}}/api/auth/signup",
             "header": [
-              {"key": "Content-Type", "value": "application/json"}
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
-              "raw": "{\"name\":\"John Doe\",\"email\":\"john@example.com\",\"phone\":\"9999999999\",\"password\":\"Pass123\",\"confirmPassword\":\"Pass123\"}"
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"Password@123\",\n  \"phone\": \"9876543210\",\n  \"role\": \"customer\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/signup",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "signup"]
             }
           }
         },
         {
           "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var jsonData = pm.response.json();",
+                  "  pm.environment.set('token', jsonData.token);",
+                  "  pm.environment.set('user_id', jsonData.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
-            "url": "{{base_url}}/api/auth/login",
             "header": [
-              {"key": "Content-Type", "value": "application/json"}
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
-              "raw": "{\"email\":\"john@example.com\",\"password\":\"Pass123\"}"
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"Password@123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "login"]
             }
           }
         },
@@ -38,23 +95,33 @@
           "name": "Get Profile",
           "request": {
             "method": "GET",
-            "url": "{{base_url}}/api/auth/profile",
             "header": [
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ]
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/profile",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "profile"]
+            }
           }
         },
         {
-          "name": "Update Profile",
+          "name": "Refresh Token",
           "request": {
-            "method": "PUT",
-            "url": "{{base_url}}/api/auth/profile",
+            "method": "POST",
             "header": [
-              {"key": "Content-Type", "value": "application/json"},
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
-            "body": {
-              "raw": "{\"name\":\"Jane Doe\",\"profileImage\":\"image_url\"}"
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/refresh-token",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "refresh-token"]
             }
           }
         },
@@ -62,13 +129,16 @@
           "name": "Logout",
           "request": {
             "method": "POST",
-            "url": "{{base_url}}/api/auth/logout",
             "header": [
-              {"key": "Content-Type", "value": "application/json"},
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
-            "body": {
-              "raw": "{\"refreshToken\":\"{{refreshToken}}\"}"
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "logout"]
             }
           }
         }
@@ -81,67 +151,27 @@
           "name": "Get All Services",
           "request": {
             "method": "GET",
-            "url": "{{base_url}}/api/services?page=1&limit=10&category=cleaning"
-          }
-        },
-        {
-          "name": "Get Service by ID",
-          "request": {
-            "method": "GET",
-            "url": "{{base_url}}/api/services/:id"
-          }
-        },
-        {
-          "name": "Search Services",
-          "request": {
-            "method": "GET",
-            "url": "{{base_url}}/api/services/search?keyword=cleaning"
-          }
-        },
-        {
-          "name": "Get Categories",
-          "request": {
-            "method": "GET",
-            "url": "{{base_url}}/api/services/categories"
-          }
-        }
-      ]
-    },
-    {
-      "name": "Cart",
-      "item": [
-        {
-          "name": "Add to Cart",
-          "request": {
-            "method": "POST",
-            "url": "{{base_url}}/api/cart",
             "header": [
-              {"key": "Content-Type", "value": "application/json"},
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
-            "body": {
-              "raw": "{\"serviceId\":\"...\",\"quantity\":1,\"selectedDate\":\"2026-02-20\",\"selectedTime\":\"10:00 AM\"}"
+            "url": {
+              "raw": "{{base_url}}/api/v1/services?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "services"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
             }
-          }
-        },
-        {
-          "name": "Get Cart",
-          "request": {
-            "method": "GET",
-            "url": "{{base_url}}/api/cart",
-            "header": [
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ]
-          }
-        },
-        {
-          "name": "Clear Cart",
-          "request": {
-            "method": "DELETE",
-            "url": "{{base_url}}/api/cart",
-            "header": [
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ]
           }
         }
       ]
@@ -153,84 +183,128 @@
           "name": "Create Booking",
           "request": {
             "method": "POST",
-            "url": "{{base_url}}/api/bookings",
             "header": [
-              {"key": "Content-Type", "value": "application/json"},
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
-              "raw": "{\"serviceId\":\"...\",\"addressId\":\"...\",\"date\":\"2026-02-20\",\"time\":\"10:00 AM\",\"notes\":\"\"}"
+              "mode": "raw",
+              "raw": "{\n  \"serviceId\": \"service_id_here\",\n  \"workerId\": \"worker_id_here\",\n  \"date\": \"2026-03-01\",\n  \"time\": \"10:00\",\n  \"location\": \"123 Main St\",\n  \"notes\": \"Please bring supplies\",\n  \"idempotencyKey\": \"unique_key_12345\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/bookings",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "bookings"]
             }
           }
         },
         {
-          "name": "Get Bookings",
+          "name": "Get My Bookings",
           "request": {
             "method": "GET",
-            "url": "{{base_url}}/api/bookings?page=1&limit=10",
             "header": [
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ]
-          }
-        },
-        {
-          "name": "Cancel Booking",
-          "request": {
-            "method": "PUT",
-            "url": "{{base_url}}/api/bookings/:id/cancel",
-            "header": [
-              {"key": "Content-Type", "value": "application/json"},
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
-            "body": {
-              "raw": "{\"cancellationReason\":\"Unable to attend\"}"
+            "url": {
+              "raw": "{{base_url}}/api/v1/bookings",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "bookings"]
             }
           }
         }
       ]
     },
     {
-      "name": "Addresses",
+      "name": "Payments",
       "item": [
         {
-          "name": "Create Address",
+          "name": "Create Payment Order",
           "request": {
             "method": "POST",
-            "url": "{{base_url}}/api/addresses",
             "header": [
-              {"key": "Content-Type", "value": "application/json"},
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
-              "raw": "{\"fullName\":\"John\",\"phone\":\"9999999999\",\"houseNo\":\"123\",\"area\":\"Downtown\",\"city\":\"NYC\",\"state\":\"NY\",\"pincode\":\"100001\"}"
+              "mode": "raw",
+              "raw": "{\n  \"bookingId\": \"{{booking_id}}\",\n  \"amount\": 500,\n  \"idempotencyKey\": \"unique_payment_key_12345\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/payments/create-order",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "payments", "create-order"]
             }
           }
         },
         {
-          "name": "Get Addresses",
+          "name": "Verify Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"razorpayPaymentId\": \"pay_xxxxx\",\n  \"razorpayOrderId\": \"order_xxxxx\",\n  \"razorpaySignature\": \"signature_xxxxx\",\n  \"idempotencyKey\": \"unique_verify_key_12345\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/payments/verify",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "payments", "verify"]
+            }
+          }
+        },
+        {
+          "name": "Get Payment History",
           "request": {
             "method": "GET",
-            "url": "{{base_url}}/api/addresses",
             "header": [
-              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
-            ]
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/payments/history",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "payments", "history"]
+            }
           }
         }
       ]
-    }
-  ],
-  "variable": [
-    {
-      "key": "base_url",
-      "value": "http://localhost:5000"
     },
     {
-      "key": "accessToken",
-      "value": ""
-    },
-    {
-      "key": "refreshToken",
-      "value": ""
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/api/health",
+          "host": ["{{base_url}}"],
+          "path": ["api", "health"]
+        }
+      }
     }
   ]
 }
