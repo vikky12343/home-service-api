@@ -10,8 +10,19 @@ const { apiLimiter } = require('./middleware/rateLimiter');
 
 const app = express();
 
-// Security Middleware
-app.use(helmet());
+// Security Middleware - Configure Helmet with CSP
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      connectSrc: ["'self'", "http://localhost:5000", "https://home-service-api-i3b4.onrender.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      fontSrc: ["'self'", "data:"]
+    }
+  }
+}));
 app.use(cors());
 app.use(apiLimiter);
 
@@ -37,7 +48,7 @@ mongoose
   })
   .catch((err) => {
     console.error('✗ MongoDB connection error:', err.message);
-    process.exit(1);
+    console.log('⚠ Server continuing without database connection');
   });
 
 // API Routes with v1 versioning
