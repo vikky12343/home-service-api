@@ -29,20 +29,25 @@ const { authLimiter } = require('../middleware/rateLimiter');
  *         application/json:
  *           schema:
  *             type: object
- *             required: [firstName, lastName, email, password, phone, role]
+ *             required: [name, email, password, confirmPassword, phone, role]
  *             properties:
- *               firstName:
+ *               name:
  *                 type: string
- *               lastName:
- *                 type: string
+ *                 description: Full name (e.g., "John Doe")
  *               email:
  *                 type: string
  *                 format: email
  *               password:
  *                 type: string
- *                 minLength: 8
+ *                 minLength: 6
+ *                 description: Min 6 chars, 1 uppercase, 1 number
+ *               confirmPassword:
+ *                 type: string
+ *                 minLength: 6
+ *                 description: Must match password
  *               phone:
  *                 type: string
+ *                 description: 10 digit phone number
  *               role:
  *                 type: string
  *                 enum: [customer, provider]
@@ -51,6 +56,8 @@ const { authLimiter } = require('../middleware/rateLimiter');
  *         description: User registered successfully
  *       400:
  *         description: Validation error
+ *       409:
+ *         description: User already exists
  *       429:
  *         description: Too many requests
  */
@@ -226,9 +233,7 @@ const { authLimiter } = require('../middleware/rateLimiter');
  *           schema:
  *             type: object
  *             properties:
- *               firstName:
- *                 type: string
- *               lastName:
+ *               name:
  *                 type: string
  *               phone:
  *                 type: string
