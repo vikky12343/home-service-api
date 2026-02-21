@@ -15,19 +15,15 @@ const { ROLES } = require('../config/constants');
 // @route POST /api/auth/signup
 // @access Public
 exports.signup = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
     const { name, email, phone, password, role } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({
       $or: [{ email }, { phone }],
-    }).session(session);
+    });
 
     if (existingUser) {
-      await session.abortTransaction();
       return sendError(res, 409, 'User with this email or phone already exists');
     }
 
@@ -44,7 +40,7 @@ exports.signup = async (req, res, next) => {
       role: role || ROLES.CUSTOMER,
     });
 
-    await user.save({ session });
+    await user.save();
 
     // Generate tokens with token family for rotation
     const tokenFamily = uuidv4();
@@ -52,14 +48,12 @@ exports.signup = async (req, res, next) => {
     const refreshToken = generateRefreshToken(user._id);
 
     // Save refresh token in separate collection (prevents unbounded array growth)
-    await RefreshToken.create([{
+    await RefreshToken.create({
       userId: user._id,
       token: refreshToken,
       tokenFamily,
       expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000)
-    }], { session });
-
-    await session.commitTransaction();
+    });
 
     return sendResponse(res, 201, true, 'User registered successfully', {
       user: {
@@ -73,10 +67,7 @@ exports.signup = async (req, res, next) => {
       refreshToken,
     });
   } catch (error) {
-    await session.abortTransaction();
     next(error);
-  } finally {
-    session.endSession();
   }
 };
 
